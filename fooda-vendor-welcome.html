@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Fooda Vendor Welcome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #E8572A;
+    --orange-light: #FDF0EB;
+    --orange-dark: #B8401A;
+    --dark: #1A1A1A;
+    --mid: #4A4A4A;
+    --muted: #888;
+    --border: #E8E4DF;
+    --bg: #FAF8F5;
+    --white: #FFFFFF;
+    --green: #2D7D4F;
+    --green-light: #EAF5EE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* NAV */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--orange);
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    box-shadow: 0 2px 12px rgba(232,87,42,0.3);
+  }
+
+  .nav-logo {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .nav-tile {
+    width: 28px;
+    height: 28px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: white;
+    line-height: 1;
+  }
+
+  .nav-menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .nav-menu-btn span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  .nav-menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-menu-btn.open span:nth-child(2) { opacity: 0; }
+  .nav-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* DRAWER */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .drawer-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: var(--white);
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    overflow-y: auto;
+    padding-bottom: 2rem;
+  }
+
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    background: var(--orange);
+    padding: 1.5rem 1.25rem 1rem;
+  }
+
+  .drawer-tiles {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  .drawer-tile {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    color: white;
+  }
+
+  .drawer-subtitle {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .drawer-nav {
+    padding: 0.75rem 0;
+  }
+
+  .drawer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.8rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--mid);
+  }
+
+  .drawer-item:hover { background: var(--orange-light); }
+  .drawer-item.active { color: var(--orange); background: var(--orange-light); font-weight: 500; }
+
+  .drawer-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .drawer-item.active .drawer-item-icon { background: var(--orange); }
+  .drawer-item.active .drawer-item-icon svg { stroke: white; }
+
+  /* MAIN */
+  .main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 0 4rem;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(160deg, var(--orange) 0%, var(--orange-dark) 100%);
+    padding: 2rem 1.5rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    right: 20px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
+  .hero-tiles {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-tile {
+    width: 38px;
+    height: 38px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 23px;
+    color: white;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+
+  .hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    position: relative;
+  }
+
+  /* SECTIONS */
+  .section {
+    display: none;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION CONTENT */
+  .section-body { padding: 1.25rem 1.25rem 0; }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--dark);
+    margin-bottom: 0.25rem;
+    padding-top: 1.5rem;
+    border-top: 3px solid var(--orange);
+    display: inline-block;
+  }
+
+  .section-intro {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .subsection-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--orange);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  /* BULLETS */
+  .bullet-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .bullet-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--mid);
+    padding: 10px 12px;
+    background: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .bullet-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .check-item:active { transform: scale(0.98); }
+
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: var(--white);
+  }
+
+  .check-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .check-item.checked .check-label {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .check-tick {
+    display: none;
+  }
+
+  .check-item.checked .check-tick {
+    display: block;
+  }
+
+  .check-label {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.4;
+    transition: color 0.15s;
+  }
+
+  .checklist-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    padding: 10px 14px;
+    background: var(--orange-light);
+    border-radius: 10px;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(232,87,42,0.2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--orange);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--orange);
+    white-space: nowrap;
+  }
+
+  /* INFO BOXES */
+  .info-card {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .info-row {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-row:last-child { border-bottom: none; }
+
+  .info-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--orange-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .info-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 2px;
+  }
+
+  .info-value {
+    font-size: 14px;
+    color: var(--dark);
+    line-height: 1.45;
+  }
+
+  .info-value a {
+    color: var(--orange);
+    text-decoration: none;
+  }
+
+  /* FINES TABLE */
+  .fines-table {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .fines-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--orange);
+  }
+
+  .fines-header span {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .fine-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+
+  .fine-row:last-child { border-bottom: none; }
+  .fine-row:nth-child(even) { background: var(--bg); }
+
+  .fine-offense {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark);
+    margin-bottom: 2px;
+  }
+
+  .fine-detail {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .fine-amount {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--orange);
+    white-space: nowrap;
+  }
+
+  /* DANGER ZONE BANNER */
+  .danger-banner {
+    background: #FFF5EC;
+    border: 1px solid #F5C4A0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .danger-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .danger-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .danger-text {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.4;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .bnav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 4px 8px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .bnav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bnav-label {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .bnav-item.active .bnav-label { color: var(--orange); }
+
+  .bnav-item.active .bnav-icon svg { stroke: var(--orange); }
+  .bnav-item .bnav-icon svg { stroke: var(--muted); }
+
+  .bnav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: var(--orange);
+    border-radius: 0 0 2px 2px;
+  }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.75rem 1.25rem 1.25rem;
+    line-height: 1.5;
+  }
+
+  /* WELCOME CARD */
+  .welcome-card {
+    margin: 1.25rem;
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .welcome-card p {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .welcome-card p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-tile">f</div>
+    <div class="nav-tile">o</div>
+    <div class="nav-tile">o</div>
+    <div class="nav-tile">d</div>
+    <div class="nav-tile">a</div>
+  </div>
+  <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-tiles">
+      <div class="drawer-tile">f</div>
+      <div class="drawer-tile">o</div>
+      <div class="drawer-tile">o</div>
+      <div class="drawer-tile">d</div>
+      <div class="drawer-tile">a</div>
+    </div>
+    <div class="drawer-subtitle">Vendor Welcome Packet</div>
+  </div>
+  <nav class="drawer-nav" aria-label="Sections">
+    <button class="drawer-item active" data-section="welcome" onclick="goTo('welcome')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      Welcome
+    </button>
+    <button class="drawer-item" data-section="program" onclick="goTo('program')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      Program Overview
+    </button>
+    <button class="drawer-item" data-section="contacts" onclick="goTo('contacts')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      </div>
+      Contacts
+    </button>
+    <button class="drawer-item" data-section="supplies" onclick="goTo('supplies')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      </div>
+      Supplies Checklist
+    </button>
+    <button class="drawer-item" data-section="temp" onclick="goTo('temp')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
+      </div>
+      Temp & Food Safety
+    </button>
+    <button class="drawer-item" data-section="fines" onclick="goTo('fines')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      Fineable Offenses
+    </button>
+    <button class="drawer-item" data-section="policies" onclick="goTo('policies')">
+      <div class="drawer-item-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      Policies & Standards
+    </button>
+  </nav>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- HERO (always visible) -->
+  <div class="hero">
+    <div class="hero-tiles">
+      <div class="hero-tile">f</div>
+      <div class="hero-tile">o</div>
+      <div class="hero-tile">o</div>
+      <div class="hero-tile">d</div>
+      <div class="hero-tile">a</div>
+    </div>
+    <h1>Vendor Welcome Packet</h1>
+    <p>Everything you need to know to get started with Fooda.</p>
+  </div>
+
+  <!-- WELCOME -->
+  <div class="section active" id="sec-welcome">
+    <div class="welcome-card">
+      <p>We're thrilled to have you as part of the Fooda vendor network! This guide contains everything you need — from program expectations to day-of-event checklists.</p>
+      <p>Fooda connects great local restaurants with workplaces, bringing employees exciting food options every day. As a Fooda vendor, you play a central role in delivering that experience.</p>
+      <p>Tap any section below or use the menu to get started. Welcome aboard!</p>
+    </div>
+
+    <!-- Quick nav cards -->
+    <div style="padding: 0 1.25rem; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-bottom: 1.25rem;">
+      <button onclick="goTo('program')" style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
+        <svg width="22" height="22" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom: 8px; display:block"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div style="font-size:13px; font-weight:600; color:var(--dark);">Program Overview</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:2px;">How Fooda works</div>
+      </button>
+      <button onclick="goTo('supplies')" style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
+        <svg width="22" height="22" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom: 8px; display:block"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <div style="font-size:13px; font-weight:600; color:var(--dark);">Supplies Checklist</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Day-of checklist</div>
+      </button>
+      <button onclick="goTo('fines')" style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
+        <svg width="22" height="22" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom: 8px; display:block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div style="font-size:13px; font-weight:600; color:var(--dark);">Fineable Offenses</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Fines & penalties</div>
+      </button>
+      <button onclick="goTo('contacts')" style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
+        <svg width="22" height="22" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom: 8px; display:block"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        <div style="font-size:13px; font-weight:600; color:var(--dark);">Contact Us</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Get in touch</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- PROGRAM OVERVIEW -->
+  <div class="section" id="sec-program">
+    <div class="section-body">
+      <div class="section-title">Program Overview</div>
+      <p class="section-intro">Here's how the Fooda program works and what's expected of you at every event.</p>
+
+      <div class="subsection-title">How It Works</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>Fooda schedules you to serve at partner locations — offices, campuses, and more</li>
+        <li><div class="bullet-dot"></div>You'll receive event confirmations with date, time, location, and setup details</li>
+        <li><div class="bullet-dot"></div>Customers order and pay through the Fooda platform</li>
+        <li><div class="bullet-dot"></div>Fooda handles marketing and customer communication — you focus on the food!</li>
+      </ul>
+
+      <div class="subsection-title">Your Responsibilities</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>Arrive on time and fully set up before service begins</li>
+        <li><div class="bullet-dot"></div>Bring all required equipment and supplies (see Supplies Checklist)</li>
+        <li><div class="bullet-dot"></div>Maintain health, sanitation, and food safety standards at all times</li>
+        <li><div class="bullet-dot"></div>Submit temperature logs at every event — required by the Health Department</li>
+        <li><div class="bullet-dot"></div>Leave your station clean after every event</li>
+        <li><div class="bullet-dot"></div>Communicate proactively if any issues arise</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CONTACTS -->
+  <div class="section" id="sec-contacts">
+    <div class="section-body">
+      <div class="section-title">Contacts</div>
+      <p class="section-intro">Reach out to the Fooda Operations team for scheduling questions, event logistics, and support.</p>
+
+      <div class="subsection-title">Operations Team</div>
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-icon">
+            <svg width="16" height="16" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="info-label">Email</div>
+            <div class="info-value"><a href="mailto:Distro@fooda.com">Distro@fooda.com</a></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">
+            <svg width="16" height="16" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="info-label">Phone</div>
+            <div class="info-value"><a href="tel:7732170412">773-217-0412</a></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">
+            <svg width="16" height="16" fill="none" stroke="#E8572A" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="info-label">Day-of Emergency</div>
+            <div class="info-value"><a href="tel:7732170412">773-217-0412</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-title">Communication Expectations</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>If you are running late, contact us <strong>before</strong> your scheduled start time</li>
+        <li><div class="bullet-dot"></div>All cancellations must be submitted through the Fooda platform or by phone</li>
+        <li><div class="bullet-dot"></div>Do not communicate directly with the client company — all communication goes through Fooda</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SUPPLIES CHECKLIST -->
+  <div class="section" id="sec-supplies">
+    <div class="section-body">
+      <div class="section-title">Supplies Checklist</div>
+      <p class="section-intro">Tap each item to check it off as you pack for your event.</p>
+
+      <div class="checklist-progress">
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">0 / 15</div>
+      </div>
+
+      <div class="subsection-title">Equipment</div>
+      <div class="checklist" id="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">POS (iPad / iPhone)</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Chargers</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Transportation cart</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Card reader</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Cash box with change</div>
+        </div>
+      </div>
+
+      <div class="subsection-title">Sanitation</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Fooda Binder with copies of permits</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Thermometer</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Sanitizing wipes / spray</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Gloves</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Hairnets / hats</div>
+        </div>
+      </div>
+
+      <div class="subsection-title">Service</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">To-go containers</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Utensils</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Serving utensils</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Food safe marker</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><svg class="check-tick" width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="check-label">Marketing materials</div>
+        </div>
+      </div>
+
+      <button onclick="resetChecklist()" style="width:100%; margin-top: 0.5rem; padding: 12px; background: none; border: 1px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); cursor: pointer;">Reset checklist</button>
+    </div>
+  </div>
+
+  <!-- TEMP & FOOD SAFETY -->
+  <div class="section" id="sec-temp">
+    <div class="section-body">
+      <div class="section-title">Temp & Food Safety</div>
+      <p class="section-intro">A temperature log is required by the Health Department at every Fooda event. Not submitting one is a fineable offense.</p>
+
+      <div class="danger-banner">
+        <div class="danger-icon">
+          <svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
+        </div>
+        <div>
+          <div class="danger-title">Temperature Danger Zone</div>
+          <div class="danger-text">40°F – 135°F &nbsp;·&nbsp; Keep hot foods HOT and cold foods COLD</div>
+        </div>
+      </div>
+
+      <div class="subsection-title">Temp Log Instructions</div>
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-icon" style="background: #E8572A; color: white; font-weight: 600; font-size: 13px;">1</div>
+          <div>
+            <div class="info-label">Before you leave</div>
+            <div class="info-value">Fill in Restaurant Name, Event Location, and Event Date at the top</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon" style="background: #E8572A; color: white; font-weight: 600; font-size: 13px;">2</div>
+          <div>
+            <div class="info-label">Record temperatures</div>
+            <div class="info-value">Log each food item Before You Leave, When You Set Up, and 1 Hour In Service</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon" style="background: #E8572A; color: white; font-weight: 600; font-size: 13px;">3</div>
+          <div>
+            <div class="info-label">Corrective action</div>
+            <div class="info-value">Note any action taken if food is found in the danger zone (40–135°F)</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon" style="background: #E8572A; color: white; font-weight: 600; font-size: 13px;">4</div>
+          <div>
+            <div class="info-label">Submit the log</div>
+            <div class="info-value">Submit via the Fooda POS system at the end of every event</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="disclaimer">Print the blank Temp Log and bring copies to every event.</p>
+    </div>
+  </div>
+
+  <!-- FINEABLE OFFENSES -->
+  <div class="section" id="sec-fines">
+    <div class="section-body">
+      <div class="section-title">Fineable Offenses</div>
+      <p class="section-intro">We hold all vendors to high standards of professionalism and reliability. These fines are deducted from your next invoice.</p>
+
+      <div class="fines-table">
+        <div class="fines-header">
+          <span>Offense</span>
+          <span>Fine</span>
+        </div>
+        <div class="fine-row">
+          <div>
+            <div class="fine-offense">No Show</div>
+            <div class="fine-detail">Without contacting Fooda prior to start</div>
+          </div>
+          <div class="fine-amount">$150</div>
+        </div>
+        <div class="fine-row">
+          <div>
+            <div class="fine-offense">Last Minute Cancellation</div>
+            <div class="fine-detail">Within 48 hours of event</div>
+          </div>
+          <div class="fine-amount">$125</div>
+        </div>
+        <div class="fine-row">
+          <div>
+            <div class="fine-offense">Late Arrival</div>
+            <div class="fine-detail">Without prior notice</div>
+          </div>
+          <div class="fine-amount">$50</div>
+        </div>
+        <div class="fine-row">
+          <div>
+            <div class="fine-offense">Leaving Site Messy</div>
+            <div class="fine-detail">Not wiping tables, sneeze guards, or cleaning spills</div>
+          </div>
+          <div class="fine-amount">$25–$50</div>
+        </div>
+        <div class="fine-row">
+          <div>
+            <div class="fine-offense">Health & Sanitation</div>
+            <div class="fine-detail">Not submitting temp logs, serving without gloves, etc.</div>
+          </div>
+          <div class="fine-amount">$25</div>
+        </div>
+      </div>
+
+      <p class="disclaimer">*This list is not complete and is subject to change. All fines will be deducted from your next invoice.</p>
+    </div>
+  </div>
+
+  <!-- POLICIES -->
+  <div class="section" id="sec-policies">
+    <div class="section-body">
+      <div class="section-title">Policies & Standards</div>
+
+      <div class="subsection-title">Code of Conduct</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>Treat all Fooda staff, client employees, and fellow vendors with professionalism and respect</li>
+        <li><div class="bullet-dot"></div>Do not share client location details, building access info, or internal information</li>
+        <li><div class="bullet-dot"></div>Social media posts featuring client locations require prior Fooda approval</li>
+      </ul>
+
+      <div class="subsection-title">Food Safety & Health</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>All food handlers must hold valid food handler certifications</li>
+        <li><div class="bullet-dot"></div>Keep all required local health permits current — copies must be in your Fooda Binder</li>
+        <li><div class="bullet-dot"></div>Gloves and hair coverings must be worn during food service at all times</li>
+        <li><div class="bullet-dot"></div>Temperatures must be logged and submitted at every event</li>
+      </ul>
+
+      <div class="subsection-title">Insurance Requirements</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>General liability minimum: $1M per occurrence / $2M aggregate</li>
+        <li><div class="bullet-dot"></div>Fooda must be listed as an additional insured on your policy</li>
+        <li><div class="bullet-dot"></div>Expired certificates may result in event suspension</li>
+      </ul>
+
+      <div class="subsection-title">Cancellation Policy</div>
+      <ul class="bullet-list">
+        <li><div class="bullet-dot"></div>Cancellations must be submitted at least 48 hours in advance to avoid fines</li>
+        <li><div class="bullet-dot"></div>Emergency cancellations must be communicated by phone — do not rely on email alone</li>
+        <li><div class="bullet-dot"></div>Repeated cancellations or no-shows may result in removal from the program</li>
+      </ul>
+    </div>
+    <div style="height: 1rem;"></div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" aria-label="Bottom navigation">
+  <button class="bnav-item active" id="bn-welcome" onclick="goTo('welcome')">
+    <div class="bnav-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span class="bnav-label">Home</span>
+  </button>
+  <button class="bnav-item" id="bn-supplies" onclick="goTo('supplies')">
+    <div class="bnav-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    </div>
+    <span class="bnav-label">Checklist</span>
+  </button>
+  <button class="bnav-item" id="bn-fines" onclick="goTo('fines')">
+    <div class="bnav-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <span class="bnav-label">Fines</span>
+  </button>
+  <button class="bnav-item" id="bn-contacts" onclick="goTo('contacts')">
+    <div class="bnav-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    </div>
+    <span class="bnav-label">Contact</span>
+  </button>
+</nav>
+
+<script>
+const sections = ['welcome','program','contacts','supplies','temp','fines','policies'];
+const bottomNavMap = { welcome:'bn-welcome', supplies:'bn-supplies', fines:'bn-fines', contacts:'bn-contacts' };
+
+function goTo(id) {
+  sections.forEach(s => {
+    document.getElementById('sec-'+s).classList.toggle('active', s === id);
+    const drawerBtn = document.querySelector(`[data-section="${s}"]`);
+    if (drawerBtn) drawerBtn.classList.toggle('active', s === id);
+  });
+  Object.keys(bottomNavMap).forEach(k => {
+    document.getElementById(bottomNavMap[k]).classList.toggle('active', k === id);
+  });
+  closeDrawer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  updateProgress();
+}
+
+function updateProgress() {
+  const all = document.querySelectorAll('.check-item');
+  const done = document.querySelectorAll('.check-item.checked');
+  const pct = all.length ? (done.length / all.length * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = done.length + ' / ' + all.length;
+}
+
+function resetChecklist() {
+  document.querySelectorAll('.check-item.checked').forEach(el => el.classList.remove('checked'));
+  updateProgress();
+}
+
+const menuBtn = document.getElementById('menuBtn');
+const drawer = document.getElementById('drawer');
+const overlay = document.getElementById('drawerOverlay');
+
+function openDrawer() {
+  drawer.classList.add('open');
+  overlay.classList.add('open');
+  menuBtn.classList.add('open');
+}
+
+function closeDrawer() {
+  drawer.classList.remove('open');
+  overlay.classList.remove('open');
+  menuBtn.classList.remove('open');
+}
+
+menuBtn.addEventListener('click', () => {
+  drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+});
+
+overlay.addEventListener('click', closeDrawer);
+</script>
+</body>
+</html>
